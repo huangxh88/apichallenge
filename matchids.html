@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+</head>
+<body>
+
+<script> 
+var server = "euw"; 
+var total_buckets = 288*6; 
+var start = 288;
+var api_key = httpGet("api_key.txt");
+
+//HttpRequest function
+function httpGet(requestUrl) 	
+   {
+   var http_request = new XMLHttpRequest();
+   http_request.open( "GET", requestUrl, false );
+   http_request.send( null );
+   return http_request.responseText;
+   }
+
+//Gets an array of match ids based on start/end 5 min buckets and server
+function getMatchIds(startBucket, endBucket, server)
+   {
+   var first_begin_date = 1427865900;
+   var bulk_match_ids = [];
+   
+   //Get list of match ids
+   for (i = startBucket; i < endBucket; i++)
+      {   
+      var begin_date = first_begin_date + i * 300;
+      var match_id_request = "https://" + server + ".api.pvp.net/api/lol/"
+                           + server + "/v4.1/game/ids?beginDate=" 
+                           + begin_date + "&api_key=" + api_key;
+      var match_ids = httpGet(match_id_request);
+      var slice_ids = match_ids.slice(1, -1);
+      var match_array = slice_ids.split(",");
+      for (j = 0; j < match_array.length; j++)
+         {
+	     bulk_match_ids.push(match_array[j]);
+	     }
+      }
+   return bulk_match_ids;
+   }   
+
+var end = start + total_buckets;
+var match_ids = getMatchIds(start, end, server);
+for (j = 0; j < match_ids.length; j++) document.write(match_ids[j] + ',');
+
+
+</script>
+
+
+</body>
+</html> 
