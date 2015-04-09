@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+</head>
+<body>
+
+<script> 
+//HttpRequest function
+function httpGet(requestUrl) 	
+   {
+   var http_request = new XMLHttpRequest();
+   http_request.open( "GET", requestUrl, false );
+   http_request.send( null );
+   return http_request.responseText;
+   }
+
+function zeroArray(dimensions) {
+    var array = [];
+    for (var i = 0; i < dimensions[0]; ++i) {
+        array.push(dimensions.length == 1 ? 0 : zeroArray(dimensions.slice(1)));
+    }
+    return array;
+}
+
+var max_champ_id = 432; //bard's champion id
+var pctMatrix = zeroArray([max_champ_id + 1,max_champ_id + 1]);
+var pcts_array = httpGet("na_pcts.txt").split(";");
+for (int i = 0; i < pcts_array.length; i++)
+   {
+   var arr = pcts_array[i].split(",");
+   pctMatrix[arr[1]][arr[2]] = arr[3]; 
+   }
+
+</script>
+
+
+</body>
+</html> 
