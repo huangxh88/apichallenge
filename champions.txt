@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+</head>
+<body>
+
+<script> 
+//HttpRequest function
+function httpGet(theUrl) 	
+   {
+   var xmlHttp = null;
+   xmlHttp = new XMLHttpRequest();
+   xmlHttp.open( "GET", theUrl, false );
+   xmlHttp.send( null );
+   return xmlHttp.responseText;
+   }
+   
+var match_id = 1780428241;
+var server = "na"; 
+var api_key = "f0d2087f-13a3-4438-a45d-a31352d61fea";
+//var match_id_request = "https://na.api.pvp.net/api/lol/na/v2.2/match/1780428241?api_key=261f8997-819a-4418-b40b-6acc6613ba5c";
+var match_id_request = "https://" + server + ".api.pvp.net/api/lol/"
+                     + server + "/v2.2/match/" + match_id 
+                     + "?api_key=" + api_key;
+var match_json = httpGet(match_id_request);
+var match_obj = JSON.parse(match_json);
+var player_array = match_obj.participants;
+for (i = 0; i < player_array.length; i++)
+   {
+   document.write(player_array[i].championId + '\n');
+   }
+//document.write(JSON.stringify(player_array));
+</script>
+
+
+</body>
+</html> 
