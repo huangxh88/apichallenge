@@ -38,8 +38,6 @@ function zeroArray(dimensions) {
 }
 
 var match_id_array = httpGet(file).split(","); 
-//document.write(match_id_array.length + "\n");
-//document.write(match_id_array[match_id_array.length-2]+ "\n");
 var winMatrix = zeroArray([max_champ_id + 1,max_champ_id + 1]);
 var gamesMatrix = zeroArray([max_champ_id + 1,max_champ_id + 1]);
 var pctMatrix = zeroArray([max_champ_id + 1,max_champ_id + 1]);
@@ -47,18 +45,16 @@ var pctMatrix = zeroArray([max_champ_id + 1,max_champ_id + 1]);
 for (var m = 0; m < match_id_array.length-1; m++)
    {
    var match_id = match_id_array[m];
-   //document.write(match_id + "\n");
    if (match_id.length != 10) continue;
    var match_id_request = "https://" + server + ".api.pvp.net/api/lol/"
                         + server + "/v2.2/match/" + match_id 
                         + "?api_key=" + api_key;
    var match_response = httpGet(match_id_request);
-   if (match_response == null) continue;
+   if (match_response == null || match_response == "") continue;
    var match_json = JSON.parse(match_response);
    var teams = match_json.teams;
    var win_team_id = findWinnerId(match_json.teams);
    var participants = match_json.participants;
-   //document.write(win_team_id);
    var win_champs = [];
    var loss_champs = [];
    for (p = 0; p < participants.length; p++)
@@ -73,8 +69,6 @@ for (var m = 0; m < match_id_array.length-1; m++)
          loss_champs.push(player.championId);
          }
       }
-   //document.write(win_champs + "\n");
-   //document.write(loss_champs + "\n");
    for (w = 0; w < win_champs.length; w++)
       {
       for (l = 0; l < loss_champs.length; l++)
@@ -89,7 +83,6 @@ for (var m = 0; m < match_id_array.length-1; m++)
          pctMatrix[loss][win] = winMatrix[loss][win] / gamesMatrix[loss][win];
          }
       }
-   //document.write(gamesMatrix);
    }
 
 for (w = 0; w < max_champ_id + 1; w++)
