@@ -1,0 +1,65 @@
+#mainblock {
+   text-align:center;
+   height: 500px;
+   background: -webkit-linear-gradient(black, grey); /* For Safari 5.1 to 6.0 */
+   background: -o-linear-gradient(black, grey); /* For Opera 11.1 to 12.0 */
+   background: -moz-linear-gradient(black, grey); /* For Firefox 3.6 to 15 */
+   background: linear-gradient(black, grey); /* Standard syntax (must be last) */
+}
+
+#title,#subtitle {
+   font-family: "Lucida Console", monospace;
+   color: silver;
+}
+
+#blueTitle {
+   color: blue;
+   font-family: "Impact", monospace;
+   padding-right: 180px;
+}
+
+#purpleTitle {
+   color: purple;
+   font-family: "Impact", monospace;
+}
+
+#buttonDiv {
+   padding-top: 20px;
+   padding-bottom: 30px;
+}
+
+.betweenInputSpan {
+   padding-right: 10px;
+}
+
+.inputDiv {
+   padding-bottom: 10px;
+}
+
+#champ1a,#champ2a,#champ3a,#champ4a,#champ5a {
+   background: blue;
+   color: white;
+   font-family: "Lucida Console", monospace;
+   font-size: 20px;
+}
+
+#champ1b,#champ2b,#champ3b,#champ4b,#champ5b {
+   background: purple;
+   color: white;
+   font-family: "Lucida Console", monospace;
+   font-size: 20px;
+}
+
+#outputEffect {
+   padding: 0.4em; 
+   text-align: center; 
+   position: relative; 
+   margin-left: auto;
+   margin-right: auto;
+}
+#outputEffect h3 { 
+   margin: 0; 
+   padding: 0.4em; 
+   text-align: center; 
+   font-family: "Lucida Console", monospace;
+}

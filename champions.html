@@ -3,6 +3,7 @@
 <head>
 <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 <meta content="utf-8" http-equiv="encoding">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 <body>
 
@@ -22,6 +23,8 @@ var match_id_request = "https://global.api.pvp.net/api/lol/static-data/na/v1.2/c
 var match_json = httpGet(match_id_request);
 var data_obj = JSON.parse(match_json).data;
 var max = 0;
+
+//Writes out a mapping of champion name to id, saves to champion.txt
 for (var key in data_obj)
    {
    var name = data_obj[key].name;

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="wincalc.css">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+</head>
+<body>
+
+<script> 
+$( document ).ready(function() {
+ $('.champInput').prop('value','')
+});
+
+//HttpRequest function
+function httpGet(requestUrl) 	
+   {
+   var http_request = new XMLHttpRequest();
+   http_request.open( "GET", requestUrl, false );
+   http_request.send( null );
+   return http_request.responseText;
+   }
+
+//generates dimensions x dimensions array of zeroes
+function zeroArray(dimensions) {
+    var array = [];
+    for (var i = 0; i < dimensions[0]; ++i) {
+        array.push(dimensions.length == 1 ? 0 : zeroArray(dimensions.slice(1)));
+    }
+    return array;
+}
+
+//creates an array of individual champion win percentages
+//each of teamA's champions win rates vs teamB's champions
+//Will have a total of 5x5=25 individual win percentages
+function getWinPcts(teamA, teamB, pctMatrix)
+   {
+   var winPcts = [];
+   for (var i = 0; i < teamA.length; i++)
+      {
+      for (var j = 0; j < teamB.length; j++)
+         {
+         var a = teamA[i];
+         var b = teamB[j];     
+         var pct = pctMatrix[a][b];
+         winPcts.push(pct);
+         }
+      } 
+   return winPcts;
+   }
+
+//Uses array of individual win percentages to determine overall win percentage
+//Each win percentage is used to produce a score of 1 or 0
+//There are 25 individual win percentages, so 13+ will be considered a win
+//A large number of matches are played out this way, to determine an overall win percentage 
+function simulateWinPct(winPcts, simulations)
+   {
+   var wins = 0;
+   for (var i = 0; i < simulations; i++)
+      {
+      var score = 0;
+      for (var j = 0; j < winPcts.length; j++)
+         {
+         var random = Math.random();
+         if (winPcts[j] > random)
+            score++;
+         }
+      if (score > winPcts.length/2.0)
+         wins++;         
+      }
+   var win_pct = wins / simulations;
+   return win_pct;
+   }
+
+var max_champ_id = 432; //bard's champion id
+var pct_matrix = zeroArray([max_champ_id + 1,max_champ_id + 1]);
+var pcts_text_array = httpGet("na_pcts.txt").split(";");
+for (var i = 0; i < pcts_text_array.length-1; i++)
+   {
+   var matchup = pcts_text_array[i].split(",");
+   pct_matrix[matchup[0]][matchup[1]] = matchup[2]; 
+   }
+
+var champ_text_array = httpGet("champions.txt").split(";");
+var champ_map = {};
+var champ_array = [];
+for (var i = 0; i < champ_text_array.length-1; i++)
+   {
+   var champ = champ_text_array[i].split(",");
+   champ_map[champ[0]] = champ[1]; 
+   champ_array.push(champ[0]); 
+   }
+
+//champion ids taken from text fields.
+var team_a = [0, 0, 0, 0, 0];
+var team_b = [0, 0, 0, 0, 0];
+
+$(function() 
+   {
+   $( ".champInput" ).autocomplete(
+      {
+      source: function( request, response ) 
+         {
+         var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( request.term ), "i" );
+         response( $.grep( champ_array, function( item )
+            {
+            return matcher.test( item );
+            }));
+         },
+      select: function (event, ui)
+         {
+         switch($(this).attr("id"))
+            {
+            case "champ1a":
+               team_a[0] = champ_map[ui.item.value];
+               break;
+            case "champ2a":
+               team_a[1] = champ_map[ui.item.value];
+               break;
+            case "champ3a":
+               team_a[2] = champ_map[ui.item.value];
+               break;
+            case "champ4a":
+               team_a[3] = champ_map[ui.item.value];
+               break;
+            case "champ5a":
+               team_a[4] = champ_map[ui.item.value];
+               break;
+            case "champ1b":
+               team_b[0] = champ_map[ui.item.value];
+               break;
+            case "champ2b":
+               team_b[1] = champ_map[ui.item.value];
+               break;
+            case "champ3b":
+               team_b[2] = champ_map[ui.item.value];
+               break;
+            case "champ4b":
+               team_b[3] = champ_map[ui.item.value];
+               break;
+            case "champ5b":
+               team_b[4] = champ_map[ui.item.value];
+               break;
+            default:
+               break;
+            }
+         }
+      });
+   });
+
+$(function() {
+    $( "input[type=submit]" )
+      .button()
+      .click(function( event ) {
+         $( "#outputEffect:visible" ).removeAttr( "style" ).fadeOut();
+         if (team_a.indexOf(0) == -1 && team_b.indexOf(0) == -1)
+            {            
+            var win_pcts = getWinPcts(team_a, team_b, pct_matrix);
+            var simulated_win_pct = Math.round(simulateWinPct(win_pcts, 100000)*100);
+            var win_text = "Blue team has " + simulated_win_pct + "% chance of victory";
+            $("#winPercentage").text(win_text);
+            $("#outputEffect").show("blind");
+            }
+      });
+   $("#outputEffect").hide();
+  });
+
+
+</script>
+
+<div id="mainblock">
+<div>
+<h1 id="title">URF WIN RATE CALCULATOR</h1>
+<h3 id="subtitle">Enter team compositions and determine probability of victory</h3>
+</div>
+<div>
+<h1 id="teamColor">
+   <span id="blueTitle">BLUE</span> 
+   <span id="purpleTitle">PURPLE</span>
+</h1>
+</div>
+<div class="inputDiv">
+   <input id="champ1a" class="champInput">
+<span class="betweenInputSpan"></span>
+   <input id="champ1b" class="champInput">
+</div>
+<div class="inputDiv">
+   <input id="champ2a" class="champInput">
+<span class="betweenInputSpan"></span>
+   <input id="champ2b" class="champInput">
+</div>
+<div class="inputDiv">
+   <input id="champ3a" class="champInput">
+<span class="betweenInputSpan"></span>
+   <input id="champ3b" class="champInput">
+</div>
+<div class="inputDiv">
+   <input id="champ4a" class="champInput">
+<span class="betweenInputSpan"></span>
+   <input id="champ4b" class="champInput">
+</div>
+<div class="inputDiv">
+   <input id="champ5a" class="champInput">
+<span class="betweenInputSpan"></span>
+   <input id="champ5b" class="champInput">
+</div>
+<div id="buttonDiv">
+   <input type="submit" value="Compute Win Percentage">
+</div>
+<div>
+  <div id="outputEffect" class="ui-corner-all">
+    <h3 class="ui-widget-header ui-corner-all" id="winPercentage"></h3>
+  </div>
+
+</body>
+</html> 

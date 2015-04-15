@@ -8,7 +8,7 @@
 
 <script> 
 var server = "na"; 
-var total_buckets = 288*5; 
+var total_buckets = 288*7; 
 var start = 288;
 var api_key = httpGet("api_key.txt");
 
@@ -47,6 +47,7 @@ function getMatchIds(startBucket, endBucket, server)
 
 var end = start + total_buckets;
 var match_ids = getMatchIds(start, end, server);
+//write comma separate match ids in browsers, saves to na_ids.txt
 for (j = 0; j < match_ids.length; j++) document.write(match_ids[j] + ',');
 
 
